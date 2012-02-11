@@ -3,10 +3,19 @@ body {
 	padding: 10px;
 }
 
+h1 {
+	margin: 10px;
+	text-align: center;
+	text-decoration: underline;
+	font-weight: bold;
+	font-size: 3em;
+}
+
 /* main panel */
 .mainPanel {
 	width: 100%;
 	margin: auto;
+	padding: 10px;
 }
 
 /* statements list flex table */
@@ -45,5 +54,5 @@ body {
 
 /* Add Transaction panel */
 .addPanel {
-  margin: 10px 0px 15px 0px;
+  margin: 10px 20px 15px 10px;
 }
