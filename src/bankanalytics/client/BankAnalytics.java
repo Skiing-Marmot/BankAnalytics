@@ -2,6 +2,7 @@ package bankanalytics.client;
 
 import java.util.ArrayList;
 
+import com.google.appengine.api.search.query.QueryParser.primitive_return;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -19,7 +20,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class BankAnalytics implements EntryPoint {
 	
-	// TODO Constant for column number
+	// Constant for column number in statementsFlexTable
+	private final static int NUM_COLUMN_NUMBER = 0;
+	private final static int DATE_COLUMN_NUMBER = 1;
+	private final static int DESC_COLUMN_NUMBER = 2;
+	private final static int CAT_COLUMN_NUMBER = 3;
+	private final static int AMOUNT_COLUMN_NUMBER = 4;
+	private final static int BALANCE_COLUMN_NUMBER = 5;
+	private final static int REMOVE_COLUMN_NUMBER = 6;
+	
 
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private FlexTable statementsFlexTable = new FlexTable();
@@ -37,13 +46,13 @@ public class BankAnalytics implements EntryPoint {
 
 		// Create table for statement lines.
 		// Set up the header row of the table.
-		statementsFlexTable.setText(0, 0, "#");
-		statementsFlexTable.setText(0, 1, "Date");
-		statementsFlexTable.setText(0, 2, "Description");
-		statementsFlexTable.setText(0, 3, "Category");
-		statementsFlexTable.setText(0, 4, "Amount");
-		statementsFlexTable.setText(0, 3, "Running Balance");
-		statementsFlexTable.setText(0, 6, "Remove");
+		statementsFlexTable.setText(0, NUM_COLUMN_NUMBER, "#");
+		statementsFlexTable.setText(0, DATE_COLUMN_NUMBER, "Date");
+		statementsFlexTable.setText(0, DESC_COLUMN_NUMBER, "Description");
+		statementsFlexTable.setText(0, CAT_COLUMN_NUMBER, "Category");
+		statementsFlexTable.setText(0, AMOUNT_COLUMN_NUMBER, "Amount");
+		statementsFlexTable.setText(0, BALANCE_COLUMN_NUMBER, "Running Balance");
+		statementsFlexTable.setText(0, REMOVE_COLUMN_NUMBER, "Remove");
 
 		// Assemble Add Transaction panel.
 		addPanel.add(newDescriptionTextBox);
@@ -104,11 +113,11 @@ public class BankAnalytics implements EntryPoint {
 	    // Add the transaction line to the table.
 	    int rowNum = statementsFlexTable.getRowCount();
 	    transactionLines.add(description);
-	    //statementsFlexTable.setText(rowNum, 0, ""+(transactionLines.indexOf(description)+1));
-	    statementsFlexTable.setText(rowNum, 2, description);
+	    //statementsFlexTable.setText(rowNum, NUM_COLUMN_NUMBER, ""+(transactionLines.indexOf(description)+1));
+	    statementsFlexTable.setText(rowNum, DESC_COLUMN_NUMBER, description);
 	    // TODO Add the other attributes.
 
-	    // Add a button to remove this stock from the table.
+	    // Add a button to remove this line from the table.
 	    Button removeTransactionLineButton = new Button("x");
 	    removeTransactionLineButton.addClickHandler(new ClickHandler() {
 	      public void onClick(ClickEvent event) {
@@ -117,9 +126,9 @@ public class BankAnalytics implements EntryPoint {
 	        statementsFlexTable.removeRow(removedIndex + 1);
 	      }
 	    });
-	    statementsFlexTable.setWidget(rowNum, 6, removeTransactionLineButton);
+	    statementsFlexTable.setWidget(rowNum, REMOVE_COLUMN_NUMBER, removeTransactionLineButton);
 
-	    // TODO Get the stock price.
+	    // TODO Get the other information.
 
 	}
 
