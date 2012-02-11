@@ -2,7 +2,6 @@ package bankanalytics.client;
 
 import java.util.ArrayList;
 
-import com.google.appengine.api.search.query.QueryParser.primitive_return;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -53,15 +52,20 @@ public class BankAnalytics implements EntryPoint {
 		statementsFlexTable.setText(0, AMOUNT_COLUMN_NUMBER, "Amount");
 		statementsFlexTable.setText(0, BALANCE_COLUMN_NUMBER, "Running Balance");
 		statementsFlexTable.setText(0, REMOVE_COLUMN_NUMBER, "Remove");
+		// Add styles to the statements flex table.
+	    statementsFlexTable.getRowFormatter().addStyleName(0, "statementsTableHeader");
+	    statementsFlexTable.addStyleName("statementsTable");
 
 		// Assemble Add Transaction panel.
 		addPanel.add(newDescriptionTextBox);
 		addPanel.add(addTransactionLineButton);
+		addPanel.addStyleName("addPanel");
 
 		// Assemble Main panel.
 		mainPanel.add(statementsFlexTable);
 		mainPanel.add(addPanel);
 		mainPanel.add(lastUpdatedLabel);
+		mainPanel.addStyleName("mainPanel");
 
 		// Associate the Main panel with the HTML host page.
 		RootPanel.get("statementList").add(mainPanel);
@@ -119,6 +123,7 @@ public class BankAnalytics implements EntryPoint {
 
 	    // Add a button to remove this line from the table.
 	    Button removeTransactionLineButton = new Button("x");
+	    removeTransactionLineButton.addStyleDependentName("remove");
 	    removeTransactionLineButton.addClickHandler(new ClickHandler() {
 	      public void onClick(ClickEvent event) {
 	        int removedIndex = transactionLines.indexOf(description);
@@ -128,8 +133,14 @@ public class BankAnalytics implements EntryPoint {
 	    });
 	    statementsFlexTable.setWidget(rowNum, REMOVE_COLUMN_NUMBER, removeTransactionLineButton);
 
-	    // TODO Get the other information.
+	    // Get the other information.
+	    refreshStatementsTable();
 
+	}
+
+	private void refreshStatementsTable() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

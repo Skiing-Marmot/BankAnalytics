@@ -1,34 +1,49 @@
-/** Add css rules here for your application. */
-
-
-/** Example rules used by the template application (remove for your app) */
-h1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
-  text-align: center;
+/* Formatting specific to the BankAnalytics application */
+body {
+	padding: 10px;
 }
 
-.sendButton {
-  display: block;
-  font-size: 16pt;
+/* main panel */
+.mainPanel {
+	width: 100%;
+	margin: auto;
 }
 
-/** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
+/* statements list flex table */
+.statementsTable {
+	width: 90%;
+	border: 1px solid silver;
+	padding: 2px;
+	margin-bottom: 6px;
+	text-align: center;
+	vertical-align: middle;
+	border-collapse: collapse;
+	margin: 10px auto;
+	color: white;
 }
 
-.dialogVPanel {
-  margin: 5px;
+.statementsTable td {
+	border: 1px solid silver;
+	color: white;
+	padding: 5px;
 }
 
-.serverResponseLabelError {
-  color: red;
+/* statements flex table header row */
+.statementsTableHeader td {
+	background: url("images/hborder.png") repeat-x 0px -25px;
+	/*background-color: #2062B8;*/
+	color: white;
+	font-style: italic;
+	font-weight: bold;
+	padding: 5px;
 }
 
-/** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
-  margin: 15px 6px 6px;
+/* statements list, the Remove button */
+.gwt-Button-remove {
+  width: 100px;
+}
+
+/* Add Transaction panel */
+.addPanel {
+  margin: 10px 0px 15px 0px;
 }
