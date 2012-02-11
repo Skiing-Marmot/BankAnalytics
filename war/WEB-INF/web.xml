@@ -7,7 +7,7 @@
 	<!-- Servlets -->
 	<servlet>
 		<servlet-name>loginService</servlet-name>
-		<servlet-class>com.google.gwt.sample.bankanalytics.server.LoginServiceImpl</servlet-class>
+		<servlet-class>bankanalytics.server.LoginServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>

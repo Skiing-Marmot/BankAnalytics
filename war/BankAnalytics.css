@@ -49,10 +49,10 @@ h1 {
 
 /* statements list, the Remove button */
 .gwt-Button-remove {
-  width: 100px;
+	width: 100px;
 }
 
 /* Add Transaction panel */
 .addPanel {
-  margin: 10px 20px 15px 10px;
+	margin: 10px 20px 15px 10px;
 }
