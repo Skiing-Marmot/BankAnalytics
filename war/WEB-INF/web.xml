@@ -10,9 +10,19 @@
 		<servlet-class>bankanalytics.server.LoginServiceImpl</servlet-class>
 	</servlet>
 
+	<servlet>
+		<servlet-name>transactionLineService</servlet-name>
+		<servlet-class>bankanalytics.server.TransactionLineServiceImpl</servlet-class>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>loginService</servlet-name>
 		<url-pattern>/bankanalytics/login</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>transactionLineService</servlet-name>
+		<url-pattern>/bankanalytics/transaction</url-pattern>
 	</servlet-mapping>
 
 	<!-- Default page to serve -->

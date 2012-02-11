@@ -49,6 +49,8 @@ public class BankAnalytics implements EntryPoint {
 	// private Label lastUpdatedLabel = new Label();
 
 	private LoginInfo loginInfo = null;
+	private final TransactionLineServiceAsync transactionLineService = GWT
+			.create(TransactionLineService.class);
 	private ArrayList<String> transactionLines = new ArrayList<String>();
 
 	/**
@@ -61,6 +63,7 @@ public class BankAnalytics implements EntryPoint {
 		loginService.login(GWT.getHostPageBaseURL(),
 				new AsyncCallback<LoginInfo>() {
 					public void onFailure(Throwable error) {
+						handleError(error);
 					}
 
 					public void onSuccess(LoginInfo result) {
@@ -83,9 +86,9 @@ public class BankAnalytics implements EntryPoint {
 	}
 
 	private void loadAccountInformation() {
-		
+
 		// Set up sign out hyperlink.
-	    signOutLink.setHref(loginInfo.getLogoutUrl());
+		signOutLink.setHref(loginInfo.getLogoutUrl());
 
 		// Create table for statement lines.
 		// Set up the header row of the table.
@@ -101,6 +104,8 @@ public class BankAnalytics implements EntryPoint {
 		statementsFlexTable.getRowFormatter().addStyleName(0,
 				"statementsTableHeader");
 		statementsFlexTable.addStyleName("statementsTable");
+
+		loadTransactionLines();
 
 		// Assemble Add Transaction panel.
 		addPanel.add(newDescriptionTextBox);
@@ -138,6 +143,25 @@ public class BankAnalytics implements EntryPoint {
 
 	}
 
+	private void loadTransactionLines() {
+		transactionLineService
+				.getTransactionLine(new AsyncCallback<String[]>() {
+					public void onFailure(Throwable error) {
+						handleError(error);
+					}
+
+					public void onSuccess(String[] descriptions) {
+						displayTransactionLines(descriptions);
+					}
+				});
+	}
+
+	private void displayTransactionLines(String[] descriptions) {
+		for (String description : descriptions) {
+			displayTransactionLine(description);
+		}
+	}
+
 	/**
 	 * Add statement line to FlexTable. Executed when the user clicks the
 	 * addTransactionLineButton or presses enter.
@@ -162,6 +186,24 @@ public class BankAnalytics implements EntryPoint {
 			return;
 		}
 
+		addTransactionLine(description);
+	}
+
+	private void addTransactionLine(final String description) {
+		transactionLineService.addTransactionLine(description,
+				new AsyncCallback<Void>() {
+					public void onFailure(Throwable error) {
+						handleError(error);
+					}
+
+					public void onSuccess(Void ignore) {
+						displayTransactionLine(description);
+					}
+				});
+	}
+
+	private void displayTransactionLine(final String description) {
+
 		// Add the transaction line to the table.
 		int rowNum = statementsFlexTable.getRowCount();
 		transactionLines.add(description);
@@ -175,9 +217,7 @@ public class BankAnalytics implements EntryPoint {
 		removeTransactionLineButton.addStyleDependentName("remove");
 		removeTransactionLineButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				int removedIndex = transactionLines.indexOf(description);
-				transactionLines.remove(removedIndex);
-				statementsFlexTable.removeRow(removedIndex + 1);
+				removeTransactionLine(description);
 			}
 		});
 		statementsFlexTable.setWidget(rowNum, REMOVE_COLUMN_NUMBER,
@@ -187,6 +227,31 @@ public class BankAnalytics implements EntryPoint {
 		refreshStatementsTable();
 
 	}
+	
+	private void removeTransactionLine(final String description) {
+		transactionLineService.removeTransactionLine(description, new AsyncCallback<Void>() {
+		      public void onFailure(Throwable error) {
+		    	  handleError(error);
+		      }
+		      public void onSuccess(Void ignore) {
+		        undisplayTransactionLine(description);
+		      }
+		    });
+	}
+	
+	 private void undisplayTransactionLine(String description) {
+			int removedIndex = transactionLines.indexOf(description);
+			transactionLines.remove(removedIndex);
+			statementsFlexTable.removeRow(removedIndex + 1);
+		  }
+	 
+	 private void handleError(Throwable error) {
+		    Window.alert(error.getMessage());
+		    if (error instanceof NotLoggedInException) {
+		      Window.Location.replace(loginInfo.getLogoutUrl());
+		    }
+		  }
+
 
 	private void refreshStatementsTable() {
 		// TODO Auto-generated method stub
