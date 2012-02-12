@@ -4,14 +4,14 @@ import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Category;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class TransactionLine {
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
@@ -21,10 +21,11 @@ public class TransactionLine {
 	private String description;
 	@Persistent
 	private double amount;
+//	@Persistent
+//	private Category category;
 	@Persistent
-	private Category category;
-	@Persistent 
-	private static double currentRunningBalance; // Account running balance.
+	private String category;
+	private static double currentRunningBalance = 0; // Account running balance.
 	@Persistent
 	private double lineBalance; // balance just after that transaction line was added.
 	
@@ -32,7 +33,7 @@ public class TransactionLine {
 		this.addDate = new Date();
 	}
 	
-	public TransactionLine(String description, double amount, Category category) {
+	public TransactionLine(String description, double amount, String category) {
 		this();
 		this.description = description;
 		this.amount = amount;
@@ -57,11 +58,11 @@ public class TransactionLine {
 		this.amount = amount;
 	}
 
-	public Category getCategory() {
+	public String getCategory() {
 		return category;
 	}
 
-	public void setCategory(Category category) {
+	public void setCategory(String category) {
 		this.category = category;
 	}
 

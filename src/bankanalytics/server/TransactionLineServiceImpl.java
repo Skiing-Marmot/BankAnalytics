@@ -9,6 +9,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import bankanalytics.client.NotLoggedInException;
+import bankanalytics.client.TransactionLineInfo;
 import bankanalytics.client.TransactionLineService;
 
 import com.google.appengine.api.users.User;
@@ -24,58 +25,54 @@ public class TransactionLineServiceImpl extends RemoteServiceServlet implements
 	private static final Logger LOG = Logger
 			.getLogger(TransactionLineServiceImpl.class.getName());
 
-	public void addTransactionLine(String symbol) throws NotLoggedInException {
+	public TransactionLineInfo addTransactionLine(String description,
+			String categoryName, double amount) throws NotLoggedInException {
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		TransactionLine newTransaction = new TransactionLine(description,
+				amount, categoryName);
+		try {
+			pm.makePersistent(newTransaction);
+		} finally {
+			pm.close();
+		}
+		// TODO manage balance
+		return new TransactionLineInfo(newTransaction.getId(), newTransaction.getAddDate(), description, amount, categoryName, newTransaction.getLineBalance());
+	}
+
+	public void removeTransactionLine(long id) throws NotLoggedInException { // TODO update the other lines when one is removed
 		checkLoggedIn();
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-			pm.makePersistent(new TransactionLine());
+			Query query = pm.newQuery(TransactionLine.class);
+		    query.setFilter("id == idParam");
+		    query.declareParameters("long idParam");
+			query.deletePersistentAll(id);
 		} finally {
 			pm.close();
 		}
 	}
 
-	public void removeTransactionLine(String description)
-			throws NotLoggedInException {
+	public TransactionLineInfo[] getTransactionLine() throws NotLoggedInException {
 		checkLoggedIn();
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-			long deleteCount = 0;
-			Query q = pm.newQuery(TransactionLine.class, "user == u");
-			q.declareParameters("com.google.appengine.api.users.User u");
-			List<TransactionLine> stocks = (List<TransactionLine>) q
-					.execute(getUser());
-			for (TransactionLine stock : stocks) {
-				if (description.equals(stock.getDescription())) {
-					deleteCount++;
-					pm.deletePersistent(stock);
-				}
+			Query q = pm.newQuery(TransactionLine.class);
+			q.setOrdering("addDate");
+			List<TransactionLine> transactions = (List<TransactionLine>) q.execute();
+			TransactionLineInfo[] transactionsList = new TransactionLineInfo[transactions.size()];
+			for(int i=0; i<transactions.size(); i++) {
+				TransactionLine transaction = transactions.get(i);
+				transactionsList[i] = new TransactionLineInfo(transaction.getId(), transaction.getAddDate(), transaction.getDescription(), transaction.getAmount(), transaction.getCategory(), transaction.getLineBalance());
 			}
-			if (deleteCount != 1) {
-				LOG.log(Level.WARNING, "removeStock deleted " + deleteCount
-						+ " Stocks");
+			int length = transactionsList.length;
+			if(length>0) {
+				TransactionLine.setCurrentRunningBalance(transactionsList[length-1].getLineBalance());
 			}
+			return transactionsList;
 		} finally {
 			pm.close();
 		}
-	}
-
-	public String[] getTransactionLine() throws NotLoggedInException {
-		checkLoggedIn();
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		List<String> symbols = new ArrayList<String>();
-		try {
-			Query q = pm.newQuery(TransactionLine.class, "user == u");
-			q.declareParameters("com.google.appengine.api.users.User u");
-			q.setOrdering("createDate");
-			List<TransactionLine> stocks = (List<TransactionLine>) q
-					.execute(getUser());
-			for (TransactionLine stock : stocks) {
-				symbols.add(stock.getDescription());
-			}
-		} finally {
-			pm.close();
-		}
-		return (String[]) symbols.toArray(new String[0]);
 	}
 
 	private void checkLoggedIn() throws NotLoggedInException {
