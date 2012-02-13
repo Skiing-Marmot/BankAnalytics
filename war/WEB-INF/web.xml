@@ -11,8 +11,13 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>transactionLineService</servlet-name>
-		<servlet-class>bankanalytics.server.TransactionLineServiceImpl</servlet-class>
+		<servlet-name>accountService</servlet-name>
+		<servlet-class>bankanalytics.server.AccountServiceImpl</servlet-class>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>fileUpload</servlet-name>
+		<servlet-class>bankanalytics.server.FileUploadServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -21,8 +26,13 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>transactionLineService</servlet-name>
-		<url-pattern>/bankanalytics/transaction</url-pattern>
+		<servlet-name>accountService</servlet-name>
+		<url-pattern>/bankanalytics/account</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>fileUpload</servlet-name>
+		<url-pattern>/bankanalytics/uploadfile</url-pattern>
 	</servlet-mapping>
 
 	<!-- Default page to serve -->

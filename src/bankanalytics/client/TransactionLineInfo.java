@@ -6,27 +6,23 @@ import java.util.Date;
 public class TransactionLineInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
-	private Long id;
+
+	private String id;
 
 	private Date addDate;
 
 	private String description;
 
 	private double amount;
-//	@Persistent
-//	private Category category;
 
-	private String category;
-//	@NotPersistent 
-//	private static double currentRunningBalance; // Account running balance.
+	private CategoryInfo category;
 
 	private double lineBalance; // balance just after that transaction line was added.
 	
 	public TransactionLineInfo() {
 	}
 	
-	public TransactionLineInfo(long id, Date addDate, String description, double amount, String category, double lineBalance) {
+	public TransactionLineInfo(String id, Date addDate, String description, CategoryInfo category, double amount, double lineBalance) {
 		this();
 		this.id = id;
 		this.addDate = addDate;
@@ -54,11 +50,11 @@ public class TransactionLineInfo implements Serializable {
 		this.amount = amount;
 	}
 
-	public String getCategory() {
+	public CategoryInfo getCategory() {
 		return category;
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(CategoryInfo category) {
 		this.category = category;
 	}
 
@@ -78,11 +74,18 @@ public class TransactionLineInfo implements Serializable {
 		this.lineBalance = lineBalance;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
 	public Date getAddDate() {
 		return addDate;
+	}
+
+	/**
+	 * @param addDate the addDate to set
+	 */
+	public void setAddDate(Date addDate) {
+		this.addDate = addDate;
 	}
 }
