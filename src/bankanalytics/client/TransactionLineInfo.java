@@ -15,14 +15,14 @@ public class TransactionLineInfo implements Serializable {
 
 	private double amount;
 
-	private CategoryInfo category;
+	private String category;
 
 	private double lineBalance; // balance just after that transaction line was added.
 	
 	public TransactionLineInfo() {
 	}
 	
-	public TransactionLineInfo(String id, Date addDate, String description, CategoryInfo category, double amount, double lineBalance) {
+	public TransactionLineInfo(String id, Date addDate, String description, String category, double amount, double lineBalance) {
 		this();
 		this.id = id;
 		this.addDate = addDate;
@@ -50,11 +50,11 @@ public class TransactionLineInfo implements Serializable {
 		this.amount = amount;
 	}
 
-	public CategoryInfo getCategory() {
+	public String getCategory() {
 		return category;
 	}
 
-	public void setCategory(CategoryInfo category) {
+	public void setCategory(String category) {
 		this.category = category;
 	}
 

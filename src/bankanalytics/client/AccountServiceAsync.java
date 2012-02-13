@@ -11,8 +11,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface AccountServiceAsync {
 
-	void addAccount(String name, double initialBalance,
-			AsyncCallback<AccountInfo> callback);
+	void addAccount(String name, AsyncCallback<String> callback);
 
 	void addCategory(AccountInfo account, String name, String color,
 			AsyncCallback<CategoryInfo> callback);
@@ -20,6 +19,8 @@ public interface AccountServiceAsync {
 	void addTransaction(AccountInfo account, Date date, String description,
 			String categoryName, double amount,
 			AsyncCallback<TransactionLineInfo> callback);
+
+	void getAccountInfoByName(String name, AsyncCallback<AccountInfo> callback);
 
 	void getAccounts(AsyncCallback<AccountInfo[]> callback);
 

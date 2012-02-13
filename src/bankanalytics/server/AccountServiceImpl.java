@@ -13,6 +13,12 @@ import bankanalytics.client.CategoryInfo;
 import bankanalytics.client.NotLoggedInException;
 import bankanalytics.client.TransactionLineInfo;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -51,21 +57,58 @@ public class AccountServiceImpl extends RemoteServiceServlet implements
 		
 	}
 	
-	// TODO getAccountByName
+private Account getAccountByName(String name) throws NotLoggedInException {
+		
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(Account.class);
+		query.setFilter("user == u && accountName == name");
+		query.declareParameters("com.google.appengine.api.users.User u, String name");
+		query.setOrdering("accountName");
+		List<Account> result = (List<Account>) query.execute(getUser(), name);
+		if(result.size()>0) {
+			return result.get(0);
+		}
+		
+		return null;
+		
+	}
+	
+	public AccountInfo getAccountInfoByName(String name) throws NotLoggedInException {
+		
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(Account.class);
+		query.setFilter("user == u && accountName == name");
+		query.declareParameters("com.google.appengine.api.users.User u, String name");
+		query.setOrdering("accountName");
+		List<Account> result = (List<Account>) query.execute(getUser(), name);
+		if(result.size()>0) {
+			return result.get(0).getAccountInfo();
+		}
+		
+		return null;
+		
+	}
 
 	@Override
-	public AccountInfo addAccount(String name, double initialBalance) throws NotLoggedInException {
+	public String addAccount(String name) throws NotLoggedInException {
 		
 		checkLoggedIn();
 		System.out.println("Check login: " + getUser().getEmail());
 	    PersistenceManager pm = PMF.get().getPersistenceManager();
-	    Account account = new Account(name, getUser(), initialBalance);
+	    Account account = null;
+	    
+		if(getAccountByName(name) == null) {
+		    account = new Account(name, getUser());
 	    try {
 	      pm.makePersistent(account);
 	    } finally {
 	      pm.close();
 	    }
-	      return account.getAccountInfo();
+	    return account.getAccountName();
+		}
+	      return null;
 	}
 
 	@Override
@@ -81,10 +124,23 @@ public class AccountServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public TransactionLineInfo[] getTransactions(AccountInfo account)
-			throws NotLoggedInException {
-		// TODO Auto-generated method stub
-		return null;
+	public TransactionLineInfo[] getTransactions(AccountInfo account) throws NotLoggedInException {
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		TransactionLineInfo[] transactions = null;
+		
+		Account a = getAccountByName(account.getAccountName());
+		
+		List<TransactionLine> transactionsList = a.getStatements();
+		
+		if(transactionsList.size()>0) {
+			transactions = new TransactionLineInfo[transactionsList.size()];
+			for(int i=0; i<transactionsList.size(); i++) {
+				transactions[i] = transactionsList.get(i).getTransactionLineInfo();
+			}
+		}
+		
+		return transactions;
 	}
 
 	@Override
@@ -95,11 +151,39 @@ public class AccountServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public TransactionLineInfo addTransaction(AccountInfo account, Date date,
+	public TransactionLineInfo addTransaction(AccountInfo accountInfo, Date date,
 			String description, String categoryName, double amount)
-			throws NotLoggedInException {
-		// TODO Auto-generated method stub
-		return null;
+			throws NotLoggedInException {		
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		Account account = getAccountByName(accountInfo.getAccountName());
+		
+		//Long id = (Long) pm.getObjectId(account);
+		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
+		TransactionLine tl = new TransactionLine(date, description, categoryName, amount, updatedAccount.getRunningBalance()+amount);
+		updatedAccount.addStatement(tl);
+		updatedAccount.setRunningBalance(tl.getLineBalance());
+		pm.close();
+		
+		
+		return tl.getTransactionLineInfo();
+	}
+	
+	public void addTransactionLine(TransactionLine transaction, String accountName) throws NotLoggedInException {
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		Account account = getAccountByName(accountName);
+		
+		//Long id = (Long) pm.getObjectId(account);
+		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
+		updatedAccount.addStatement(transaction);
+		updatedAccount.setRunningBalance(transaction.getLineBalance());
+		pm.close();
+		
 	}
 
 	@Override

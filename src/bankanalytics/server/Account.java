@@ -26,9 +26,9 @@ public class Account {
 	@Persistent
 	private User user;
 	@Persistent
-	private List<Category> categories;
+	private List<Category> categories = new ArrayList<Category>();
 	@Persistent
-	private List<TransactionLine> statements;
+	private List<TransactionLine> statements = new ArrayList<TransactionLine>();
 	@Persistent
 	private double runningBalance;
 	
@@ -36,17 +36,13 @@ public class Account {
 	 * @param accountName
 	 * @param user
 	 */
-	public Account(String accountName, User user, double initialBalance) {
+	public Account(String accountName, User user) {
 		super();
 		this.accountName = accountName;
 		this.user = user;
-		this.runningBalance = initialBalance;
-		Category newCat = new Category("Bank Transaction", "orange");
-//		this.categories.add(newCat);
-////		this.statements.add(new TransactionLine("Opening Balance", newCat, initialBalance, runningBalance));
-//		this.statements.add(new TransactionLine("Opening Balance", newCat, initialBalance, runningBalance));
-		this.categories = new ArrayList<Category>();
-		this.statements = new ArrayList<TransactionLine>();
+		this.runningBalance = 0;
+		//this.categories = new ArrayList<Category>();
+		//this.statements = new ArrayList<TransactionLine>();
 	}
 
 	/**

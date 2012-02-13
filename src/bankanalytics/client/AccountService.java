@@ -13,7 +13,8 @@ import com.google.gwt.user.client.rpc.RemoteService;
 @RemoteServiceRelativePath("account")
 public interface AccountService extends RemoteService {
 	public AccountInfo[] getAccounts() throws NotLoggedInException;
-	public AccountInfo addAccount(String name, double initialBalance)  throws NotLoggedInException;
+	public AccountInfo getAccountInfoByName(String name) throws NotLoggedInException;
+	String addAccount(String name) throws NotLoggedInException;
 	public void updateAccount(long id, String name) throws NotLoggedInException;
 	public AccountInfo removeAccount(long id) throws NotLoggedInException;
 	

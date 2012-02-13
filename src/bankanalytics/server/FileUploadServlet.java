@@ -53,13 +53,16 @@ public class FileUploadServlet extends HttpServlet {
 					int len;
 					byte[] buffer = new byte[8192];
 					while ((len = stream.read(buffer, 0, buffer.length)) != -1) {
-						res.getOutputStream().write(buffer, 0, len);
+						//res.getOutputStream().write(buffer, 0, len);
 					}
 					String csvFileContent = new String(buffer);
 					String name = item.getName().substring(0, item.getName().length()-4);
 					log.warning("Name: " + name);
-					createAccount(name);
-					parseCSVfile(csvFileContent);
+					String accountName = createAccount(name);
+					if(accountName != null) {
+						parseCSVfile(csvFileContent, accountName);
+						res.getOutputStream().write(accountName.getBytes());
+					}
 				}
 			}
 		} catch (Exception ex) {
@@ -67,7 +70,7 @@ public class FileUploadServlet extends HttpServlet {
 		}
 	}
 	
-	private void parseCSVfile(String csvFileContent) {
+	private void parseCSVfile(String csvFileContent, String accountName) {
 		String[] csvLines = csvFileContent.split("\n");
 		double balance = 0;
 		for(int i=0; i<csvLines.length-1; i++) {
@@ -75,8 +78,9 @@ public class FileUploadServlet extends HttpServlet {
 			// TODO constants
 			String stringDate = lineFields[0];
 			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			Date date = new Date();
 			try {
-				Date date = df.parse(stringDate);
+				date = df.parse(stringDate);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -90,18 +94,26 @@ public class FileUploadServlet extends HttpServlet {
 			double amount = lineBalance - balance;
 			balance = lineBalance;
 			
-			TransactionLine tl = new TransactionLine(stringDescription, category, amount, lineBalance);
+			TransactionLine tl = new TransactionLine(date, stringDescription, stringCategory, amount, lineBalance);
+			try {
+				accountService.addTransactionLine(tl, accountName);
+			} catch (NotLoggedInException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			log.warning("Length: " + csvLines.length + " - Length: " + lineFields.length + " - Date: " + stringDate + " - Description: " + stringDescription + " - Category: " + stringCategory + " - Balance: " + stringBalance);
 		}
 	}
 	
-	private void createAccount(String name) {
+	private String createAccount(String name) {
 		try {
-			accountService.addAccount(name, 0);
+			String accountName = accountService.addAccount(name);
+			return accountName;
 		} catch (NotLoggedInException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
 }
