@@ -67,8 +67,7 @@ public class StatementsPanel extends Composite {
 		private final AccountServiceAsync accountService = GWT.create(AccountService.class);
 		private ArrayList<TransactionLineInfo> transactionLines = new ArrayList<TransactionLineInfo>();
 	
-	
-	public StatementsPanel(LoginInfo loginInfo, AccountInfo accountInfo) {
+	public StatementsPanel(LoginInfo loginInfo, final AccountInfo accountInfo) {
 		this.accountInfo = accountInfo;
 		this.loginInfo = loginInfo;
 		// Set up sign out hyperlink.
@@ -82,7 +81,7 @@ public class StatementsPanel extends Composite {
 		statementsByCategoryLink.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				new StatementsByCategoryDialog().show();
+				new StatementsByCategoryDialog(accountInfo).show();
 			}
 		});
 		mainPanel.add(statementsByCategoryLink);
@@ -90,7 +89,7 @@ public class StatementsPanel extends Composite {
 		categoryManagerLink.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				new CategoryManagerDialog().show();
+				new CategoryManagerDialog(accountInfo).show();
 			}
 		});
 		mainPanel.add(categoryManagerLink);
@@ -98,9 +97,11 @@ public class StatementsPanel extends Composite {
 		// TODO load statements
 		loadAccountInformation();
 		
+		//mainPanel.add(sg);
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget(mainPanel);
-
+		
 		// Give the overall composite a style name.
 		setStyleName("Statements-Panel");
 	}
@@ -178,11 +179,22 @@ public class StatementsPanel extends Composite {
 	
 	private void loadCategories() {
 		
-		// TODO
-		
-		categoryListBox.addItem("Clothing");
-		categoryListBox.addItem("Food");
-		categoryListBox.addItem("Medical care");
+		accountService.getCategories(accountInfo, new AsyncCallback<CategoryInfo[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				handleError(caught);
+			}
+
+			@Override
+			public void onSuccess(CategoryInfo[] result) {
+				if(result != null) {
+					for(int i=0; i<result.length; i++) {
+						categoryListBox.addItem(result[i].getCategoryName());
+					}
+				}
+			}
+		});
 	}
 
 	private void loadTransactionLines() {

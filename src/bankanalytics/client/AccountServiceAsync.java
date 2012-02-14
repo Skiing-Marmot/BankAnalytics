@@ -29,7 +29,7 @@ public interface AccountServiceAsync {
 	void getTransactions(AccountInfo account,
 			AsyncCallback<TransactionLineInfo[]> callback);
 
-	void getTransactionsByCategory(AccountInfo account,
+	void getTransactionsByCategory(AccountInfo account, String categoryName,
 			AsyncCallback<TransactionLineInfo[]> callback);
 
 	void removeAccount(long id, AsyncCallback<AccountInfo> callback);

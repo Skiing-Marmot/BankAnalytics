@@ -19,7 +19,8 @@ public interface AccountService extends RemoteService {
 	public AccountInfo removeAccount(long id) throws NotLoggedInException;
 	
 	public TransactionLineInfo[] getTransactions(AccountInfo account) throws NotLoggedInException;
-	public TransactionLineInfo[] getTransactionsByCategory(AccountInfo account) throws NotLoggedInException;
+	TransactionLineInfo[] getTransactionsByCategory(AccountInfo account,
+			String categoryName) throws NotLoggedInException;
 	public TransactionLineInfo addTransaction(AccountInfo account, Date date, String description, String categoryName, double amount) throws NotLoggedInException;
 	public void updateTransaction(long id, Date date, String description, String categoryName, double amount) throws NotLoggedInException;
 	public TransactionLineInfo removeTransaction(long id) throws NotLoggedInException;

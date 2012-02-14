@@ -28,7 +28,7 @@ public class AccountsPanel extends Composite {
 	private HorizontalPanel addPanel = new HorizontalPanel();
 	private Label newNameLabel = new Label("Account name: ");
 	private TextBox newNameTextBox = new TextBox();
-	private Label csvFileLabel = new Label("Select the CSV File to upload to create your new account: ");
+	private Label csvFileLabel = new Label("Select the CSV File to upload to create your new account: \r\n File format must be : dd/mm/yyyy,description,category,balance");
 	private FileUpload csvFileUpload = new FileUpload();
 	private Button addAccountButton = new Button("Create account");
 	private Anchor signOutLink = new Anchor("Sign Out");
@@ -171,7 +171,6 @@ public class AccountsPanel extends Composite {
 	        // we can get the result text here (see the FormPanel documentation for
 	        // further explanation).
 	    	  String newAccountName = event.getResults().split(">")[1].split("<")[0];
-	        Window.alert("Name: " + newAccountName);
 	        addAccount(newAccountName);
 	      }
 	    });

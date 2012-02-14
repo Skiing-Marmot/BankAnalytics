@@ -101,6 +101,17 @@ public class Account {
 	public void removeCategory(Category category) {
 		this.categories.remove(category);
 	}
+	
+	public boolean isInCategories(String categoryName) {
+		boolean found = false;
+		for(Category c : categories) {
+			if(c.getCategoryName().equals(categoryName)) {
+				found = true;
+				break;
+			}
+		}
+		return found;
+	}
 
 	/**
 	 * @return the statements

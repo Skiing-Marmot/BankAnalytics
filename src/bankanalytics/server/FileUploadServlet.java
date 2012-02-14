@@ -96,6 +96,7 @@ public class FileUploadServlet extends HttpServlet {
 			
 			TransactionLine tl = new TransactionLine(date, stringDescription, stringCategory, amount, lineBalance);
 			try {
+				accountService.addCategory(stringCategory, accountName);
 				accountService.addTransactionLine(tl, accountName);
 			} catch (NotLoggedInException e) {
 				// TODO Auto-generated catch block

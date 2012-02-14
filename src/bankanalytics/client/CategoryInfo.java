@@ -8,6 +8,7 @@ public class CategoryInfo implements Serializable {
 	private String id;
 	private String categoryName;
 	private String color;
+	private double sum;
 	
 	public CategoryInfo() {
 		
@@ -18,11 +19,12 @@ public class CategoryInfo implements Serializable {
 	 * @param categoryName
 	 * @param color
 	 */
-	public CategoryInfo(String id, String categoryName, String color) {
+	public CategoryInfo(String id, String categoryName, String color, double sum) {
 		super();
 		this.id = id;
 		this.categoryName = categoryName;
 		this.color = color;
+		this.sum = sum;
 	}
 
 	/**
@@ -51,6 +53,20 @@ public class CategoryInfo implements Serializable {
 	 */
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	/**
+	 * @return the sum
+	 */
+	public double getSum() {
+		return sum;
+	}
+
+	/**
+	 * @param sum the sum to set
+	 */
+	public void setSum(double sum) {
+		this.sum = sum;
 	}
 
 	/**

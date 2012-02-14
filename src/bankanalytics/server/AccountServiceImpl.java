@@ -126,7 +126,7 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 	@Override
 	public TransactionLineInfo[] getTransactions(AccountInfo account) throws NotLoggedInException {
 		checkLoggedIn();
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		
 		TransactionLineInfo[] transactions = null;
 		
 		Account a = getAccountByName(account.getAccountName());
@@ -144,9 +144,19 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 	}
 
 	@Override
-	public TransactionLineInfo[] getTransactionsByCategory(AccountInfo account)
+	public TransactionLineInfo[] getTransactionsByCategory(AccountInfo account, String categoryName)
 			throws NotLoggedInException {
-		// TODO Auto-generated method stub
+		
+		checkLoggedIn();
+		TransactionLineInfo[] transactions = null;
+		
+		Account a = getAccountByName(account.getAccountName());
+		
+		List<TransactionLine> transactionsList = a.getStatements();
+		
+		if(transactionsList.size() > 0) {
+			
+		}
 		return null;
 	}
 
@@ -156,15 +166,17 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 			throws NotLoggedInException {		
 		checkLoggedIn();
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		Account account = getAccountByName(accountInfo.getAccountName());
+		Category category = getCategoryByName(categoryName, account);
 		
 		//Long id = (Long) pm.getObjectId(account);
 		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
 		TransactionLine tl = new TransactionLine(date, description, categoryName, amount, updatedAccount.getRunningBalance()+amount);
 		updatedAccount.addStatement(tl);
 		updatedAccount.setRunningBalance(tl.getLineBalance());
+		Category updatedCategory = pm.getObjectById(Category.class, category.getId());
+		updatedCategory.addAmountToSum(amount);
 		pm.close();
 		
 		
@@ -174,14 +186,16 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 	public void addTransactionLine(TransactionLine transaction, String accountName) throws NotLoggedInException {
 		checkLoggedIn();
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		Account account = getAccountByName(accountName);
+		Category category = getCategoryByName(transaction.getCategoryName(), account);
 		
 		//Long id = (Long) pm.getObjectId(account);
 		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
 		updatedAccount.addStatement(transaction);
 		updatedAccount.setRunningBalance(transaction.getLineBalance());
+		Category updatedCategory = pm.getObjectById(Category.class, category.getId());
+		updatedCategory.addAmountToSum(transaction.getAmount());
 		pm.close();
 		
 	}
@@ -203,15 +217,68 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 	@Override
 	public CategoryInfo[] getCategories(AccountInfo account)
 			throws NotLoggedInException {
-		// TODO Auto-generated method stub
+		
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		CategoryInfo[] categories = null;
+		
+		Account a = getAccountByName(account.getAccountName());
+		
+		List<Category> categoriesList = a.getCategories();
+		
+		if(categoriesList.size()>0) {
+			categories = new CategoryInfo[categoriesList.size()];
+			for(int i=0; i<categoriesList.size(); i++) {
+				categories[i] = categoriesList.get(i).getCategoryInfo();
+			}
+		}
+		
+		return categories;
+		
+	}
+	
+private Category getCategoryByName(String name, Account account) throws NotLoggedInException {
+		
+		checkLoggedIn();
+		
+		List<Category> categories = account.getCategories();
+		
+		for(Category c : categories) {
+			if(c.getCategoryName().equals(name)) {
+				return c;
+			}
+		}
 		return null;
 	}
 
 	@Override
-	public CategoryInfo addCategory(AccountInfo account, String name, String color)
+	public CategoryInfo addCategory(AccountInfo accountInfo, String name, String color)
 			throws NotLoggedInException {
-		// TODO Auto-generated method stub
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Account account = getAccountByName(accountInfo.getAccountName());
+		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
+		if(!updatedAccount.isInCategories(name)) {
+			Category category = new Category(name, color);
+			updatedAccount.addCategory(category);
+			return category.getCategoryInfo();
+		}
 		return null;
+	}
+	
+	public void addCategory(String categoryName, String accountName) throws NotLoggedInException {
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+
+		Account account = getAccountByName(accountName);
+		
+		//Long id = (Long) pm.getObjectId(account);
+		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
+		
+		if(!updatedAccount.isInCategories(categoryName)) {
+			updatedAccount.addCategory(new Category(categoryName, "white"));
+		}
+		pm.close();
 	}
 
 	@Override

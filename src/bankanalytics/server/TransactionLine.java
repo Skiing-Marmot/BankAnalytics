@@ -30,8 +30,9 @@ public class TransactionLine {
 //	@Persistent
 //	private Category category;
 	@Persistent
-	private String category;
-//	private static double currentRunningBalance = 0; // Account running balance.
+	private String categoryName;
+
+	//	private static double currentRunningBalance = 0; // Account running balance.
 	@Persistent
 	private double lineBalance; // balance just after that transaction line was added.
 	
@@ -44,7 +45,7 @@ public class TransactionLine {
 		this.addDate = date;
 		this.description = description;
 		this.amount = amount;
-		this.category = category;
+		this.categoryName = category;
 		this.lineBalance = lineBalance;
 	}
 
@@ -64,13 +65,20 @@ public class TransactionLine {
 		this.amount = amount;
 	}
 
-//	public Category getCategory() {
-//		return category;
-//	}
-//
-//	public void setCategory(Category category) {
-//		this.category = category;
-//	}
+	/**
+	 * @return the categoryName
+	 */
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	/**
+	 * @param categoryName the categoryName to set
+	 */
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+
 
 //	public static double getCurrentRunningBalance() {
 //		return currentRunningBalance;
@@ -98,6 +106,6 @@ public class TransactionLine {
 	
 	public TransactionLineInfo getTransactionLineInfo() {
 		//CategoryInfo catInfo = this.category.getCategoryInfo();
-		return new TransactionLineInfo(id, getAddDate(), getDescription(), category, getAmount(), getLineBalance());
+		return new TransactionLineInfo(id, getAddDate(), getDescription(), categoryName, getAmount(), getLineBalance());
 	}
 }
