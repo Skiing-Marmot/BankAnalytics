@@ -16,7 +16,7 @@ public class CategoryManagerDialog extends DialogBox {
 
 	private VerticalPanel panel = new VerticalPanel();
 	private Label soonLabel = new Label("Coming Soon");
-	private Button ok = new Button("OK");
+	private Button ok = new Button("Close");
 	private FlexTable categoriesFlexTable = new FlexTable();
 	private HorizontalPanel addPanel = new HorizontalPanel();
 	private Label nameLabel = new Label("Category name");

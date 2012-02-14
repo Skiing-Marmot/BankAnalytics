@@ -15,7 +15,7 @@ public class StatementsByCategoryDialog extends DialogBox {
 	
 	private VerticalPanel panel = new VerticalPanel();
 	private Label soonLabel = new Label("Coming Soon");
-    private Button ok = new Button("OK");
+    private Button ok = new Button("Close");
     
 	private final AccountServiceAsync accountService = GWT.create(AccountService.class);
 	
