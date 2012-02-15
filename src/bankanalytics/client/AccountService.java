@@ -27,7 +27,7 @@ public interface AccountService extends RemoteService {
 	
 	public CategoryInfo[] getCategories(AccountInfo account) throws NotLoggedInException;
 	public CategoryInfo addCategory(AccountInfo account, String name, String color) throws NotLoggedInException;
-	public void updateCategory(long id, String name, String color) throws NotLoggedInException;
-	public CategoryInfo removeCategory(long id) throws NotLoggedInException;
+	void updateCategory(String string, String name, String color) throws NotLoggedInException;
+	void removeCategory(String string) throws NotLoggedInException;
 	
 }

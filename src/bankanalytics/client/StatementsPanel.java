@@ -437,4 +437,22 @@ public class StatementsPanel extends Composite {
 		categories.add(category);
 		categoryListBox.addItem(category.getCategoryName());
 	}
+	
+	protected void updateCategory(CategoryInfo category, String newName, String newColor) {
+		boolean found = false;
+		for(int i=0; i<categories.size() && !found; i++) {
+			if(categories.get(i).getCategoryName().equals(category.getCategoryName())) {
+				found = true;
+				categories.get(i).setCategoryName(newName);
+				categories.get(i).setColor(newColor);				
+			}
+		}
+	}
+	
+	protected int removeCategory(CategoryInfo category) {
+		int removedIndex = categories.indexOf(category);
+		categories.remove(removedIndex);
+		categoryListBox.removeItem(removedIndex);
+		return removedIndex;
+	}
 }

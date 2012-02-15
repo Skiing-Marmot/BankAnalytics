@@ -7,6 +7,8 @@ import java.util.List;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.eclipse.jdt.internal.compiler.flow.FinallyFlowContext;
+
 import bankanalytics.client.AccountInfo;
 import bankanalytics.client.AccountService;
 import bankanalytics.client.CategoryInfo;
@@ -276,16 +278,41 @@ private Category getCategoryByName(String name, Account account) throws NotLogge
 	}
 
 	@Override
-	public void updateCategory(long id, String name, String color)
+	public void updateCategory(String id, String name, String color)
 			throws NotLoggedInException {
-		// TODO Auto-generated method stub
-
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try {
+			Query query = pm.newQuery(Category.class);
+			query.setFilter("id == idParam");
+			query.declareParameters("String idParam");
+			List<Category> list = (List<Category>) query.execute(id);
+			if(!list.isEmpty()) {
+				Category updatedCategory = list.get(0);
+				updatedCategory.setCategoryName(name);
+				updatedCategory.setColor(color);
+			}
+		}
+		finally {
+			pm.close();
+		}
 	}
 
 	@Override
-	public CategoryInfo removeCategory(long id) throws NotLoggedInException {
-		// TODO Auto-generated method stub
-		return null;
+	public void removeCategory(String id) throws NotLoggedInException {
+		checkLoggedIn();
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		
+		// TODO Manage transaction which was in that category
+		
+		try {
+			Query query = pm.newQuery(Category.class);
+			query.setFilter("id == idParam");
+			query.declareParameters("String idParam");
+			query.deletePersistentAll(id);
+		} finally {
+			pm.close();
+		}
 	}
 	
 	private void checkLoggedIn() throws NotLoggedInException {

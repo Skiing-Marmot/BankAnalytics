@@ -34,16 +34,18 @@ public interface AccountServiceAsync {
 
 	void removeAccount(long id, AsyncCallback<AccountInfo> callback);
 
-	void removeCategory(long id, AsyncCallback<CategoryInfo> callback);
+	void removeCategory(String string, AsyncCallback<Void> asyncCallback);
 
 	void removeTransaction(long id, AsyncCallback<TransactionLineInfo> callback);
 
 	void updateAccount(long id, String name, AsyncCallback<Void> callback);
 
-	void updateCategory(long id, String name, String color,
-			AsyncCallback<Void> callback);
+	void updateCategory(String id, String newName, String newColor,
+			AsyncCallback<Void> asyncCallback);
 
 	void updateTransaction(long id, Date date, String description,
 			String categoryName, double amount, AsyncCallback<Void> callback);
+
+	
 
 }
