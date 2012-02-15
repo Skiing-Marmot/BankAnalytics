@@ -72,6 +72,14 @@ public class Account {
 	public void setRunningBalance(double runningBalance) {
 		this.runningBalance = runningBalance;
 	}
+	
+	public void addToRunningBalance(double amount) {
+		this.runningBalance += amount;
+	}
+	
+	public void removeFromBalance(double amount) {
+		this.runningBalance -= amount;
+	}
 
 	/**
 	 * @return the id

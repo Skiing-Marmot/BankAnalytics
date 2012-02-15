@@ -3,7 +3,9 @@ package bankanalytics.client;
 import java.io.Serializable;
 import java.util.Date;
 
-public class TransactionLineInfo implements Serializable {
+import com.google.gwt.user.client.Window;
+
+public class TransactionLineInfo implements Serializable, Comparable<TransactionLineInfo> {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -87,5 +89,10 @@ public class TransactionLineInfo implements Serializable {
 	 */
 	public void setAddDate(Date addDate) {
 		this.addDate = addDate;
+	}
+
+	@Override
+	public int compareTo(TransactionLineInfo o) {
+		return this.addDate.compareTo(o.addDate);
 	}
 }

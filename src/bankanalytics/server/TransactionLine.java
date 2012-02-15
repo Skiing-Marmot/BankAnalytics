@@ -14,7 +14,7 @@ import bankanalytics.client.CategoryInfo;
 import bankanalytics.client.TransactionLineInfo;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class TransactionLine {
+public class TransactionLine implements Comparable<TransactionLine> {
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -33,20 +33,19 @@ public class TransactionLine {
 	private String categoryName;
 
 	//	private static double currentRunningBalance = 0; // Account running balance.
-	@Persistent
-	private double lineBalance; // balance just after that transaction line was added.
+//	@Persistent
+//	private double lineBalance; // balance just after that transaction line was added.
 	
 	public TransactionLine() {
 		
 	}
 	
-	public TransactionLine(Date date, String description, String category, double amount, double lineBalance) {
+	public TransactionLine(Date date, String description, String category, double amount) {
 		this();
 		this.addDate = date;
 		this.description = description;
 		this.amount = amount;
 		this.categoryName = category;
-		this.lineBalance = lineBalance;
 	}
 
 	public String getDescription() {
@@ -88,13 +87,13 @@ public class TransactionLine {
 //		TransactionLine.currentRunningBalance = currentRunningBalance;
 //	}
 
-	public double getLineBalance() {
-		return lineBalance;
-	}
-
-	public void setLineBalance(double lineBalance) {
-		this.lineBalance = lineBalance;
-	}
+//	public double getLineBalance() {
+//		return lineBalance;
+//	}
+//
+//	public void setLineBalance(double lineBalance) {
+//		this.lineBalance = lineBalance;
+//	}
 
 	public String getId() {
 		return id;
@@ -106,6 +105,11 @@ public class TransactionLine {
 	
 	public TransactionLineInfo getTransactionLineInfo() {
 		//CategoryInfo catInfo = this.category.getCategoryInfo();
-		return new TransactionLineInfo(id, getAddDate(), getDescription(), categoryName, getAmount(), getLineBalance());
+		return new TransactionLineInfo(id, getAddDate(), getDescription(), categoryName, getAmount(), 0);
+	}
+
+	@Override
+	public int compareTo(TransactionLine o) {
+		return this.addDate.compareTo(o.addDate);
 	}
 }

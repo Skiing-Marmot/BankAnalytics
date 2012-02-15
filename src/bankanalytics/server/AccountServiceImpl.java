@@ -1,6 +1,6 @@
 package bankanalytics.server;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -13,12 +13,6 @@ import bankanalytics.client.CategoryInfo;
 import bankanalytics.client.NotLoggedInException;
 import bankanalytics.client.TransactionLineInfo;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -132,7 +126,7 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 		Account a = getAccountByName(account.getAccountName());
 		
 		List<TransactionLine> transactionsList = a.getStatements();
-		
+		Collections.sort(transactionsList);
 		if(transactionsList.size()>0) {
 			transactions = new TransactionLineInfo[transactionsList.size()];
 			for(int i=0; i<transactionsList.size(); i++) {
@@ -172,9 +166,9 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 		
 		//Long id = (Long) pm.getObjectId(account);
 		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
-		TransactionLine tl = new TransactionLine(date, description, categoryName, amount, updatedAccount.getRunningBalance()+amount);
+		TransactionLine tl = new TransactionLine(date, description, categoryName, amount);
+		updatedAccount.addToRunningBalance(amount);
 		updatedAccount.addStatement(tl);
-		updatedAccount.setRunningBalance(tl.getLineBalance());
 		Category updatedCategory = pm.getObjectById(Category.class, category.getId());
 		updatedCategory.addAmountToSum(amount);
 		pm.close();
@@ -192,8 +186,8 @@ private Account getAccountByName(String name) throws NotLoggedInException {
 		
 		//Long id = (Long) pm.getObjectId(account);
 		Account updatedAccount = pm.getObjectById(Account.class, account.getId());
+		updatedAccount.addToRunningBalance(transaction.getAmount());
 		updatedAccount.addStatement(transaction);
-		updatedAccount.setRunningBalance(transaction.getLineBalance());
 		Category updatedCategory = pm.getObjectById(Category.class, category.getId());
 		updatedCategory.addAmountToSum(transaction.getAmount());
 		pm.close();

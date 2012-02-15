@@ -28,7 +28,8 @@ public class CategoryManagerDialog extends DialogBox {
 	private AccountServiceAsync accountService = GWT
 			.create(AccountService.class);
 
-	public CategoryManagerDialog(final AccountInfo accountInfo) {
+	public CategoryManagerDialog(final AccountInfo accountInfo, StatementsPanel statPanel) {
+		
 		// Set the dialog box's caption.
 		setText("Categories");
 

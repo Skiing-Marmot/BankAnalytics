@@ -94,7 +94,7 @@ public class FileUploadServlet extends HttpServlet {
 			double amount = lineBalance - balance;
 			balance = lineBalance;
 			
-			TransactionLine tl = new TransactionLine(date, stringDescription, stringCategory, amount, lineBalance);
+			TransactionLine tl = new TransactionLine(date, stringDescription, stringCategory, amount);
 			try {
 				accountService.addCategory(stringCategory, accountName);
 				accountService.addTransactionLine(tl, accountName);
