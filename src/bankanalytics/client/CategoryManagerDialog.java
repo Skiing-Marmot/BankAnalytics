@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class CategoryManagerDialog extends DialogBox {
 
 	private VerticalPanel panel = new VerticalPanel();
-	private Label soonLabel = new Label("Coming Soon");
 	private Button ok = new Button("Close");
 	private FlexTable categoriesFlexTable = new FlexTable();
 	private HorizontalPanel addPanel = new HorizontalPanel();
@@ -27,8 +26,11 @@ public class CategoryManagerDialog extends DialogBox {
 
 	private AccountServiceAsync accountService = GWT
 			.create(AccountService.class);
+	private StatementsPanel statPanel;
 
 	public CategoryManagerDialog(final AccountInfo accountInfo, StatementsPanel statPanel) {
+		
+		this.statPanel = statPanel;
 		
 		// Set the dialog box's caption.
 		setText("Categories");
@@ -99,6 +101,7 @@ public class CategoryManagerDialog extends DialogBox {
 									result.getCategoryName());
 							categoriesFlexTable.setText(rowNum, 1,
 									result.getColor());
+							statPanel.addCategory(result);
 						}
 					}
 				});
