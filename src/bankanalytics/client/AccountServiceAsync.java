@@ -1,11 +1,6 @@
 package bankanalytics.client;
 
 import java.util.Date;
-import java.util.List;
-
-import bankanalytics.server.Account;
-import bankanalytics.server.Category;
-import bankanalytics.server.TransactionLine;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -13,12 +8,9 @@ public interface AccountServiceAsync {
 
 	void addAccount(String name, AsyncCallback<String> callback);
 
-	void addCategory(AccountInfo account, String name, String color,
-			AsyncCallback<CategoryInfo> callback);
+	void addCategory(AccountInfo account, String name, String color, AsyncCallback<CategoryInfo> callback);
 
-	void addTransaction(AccountInfo account, Date date, String description,
-			String categoryName, double amount,
-			AsyncCallback<TransactionLineInfo> callback);
+	void addTransaction(AccountInfo account, Date date, String description, String categoryName, double amount, AsyncCallback<TransactionLineInfo> callback);
 
 	void getAccountInfoByName(String name, AsyncCallback<AccountInfo> callback);
 
@@ -26,11 +18,7 @@ public interface AccountServiceAsync {
 
 	void getCategories(AccountInfo account, AsyncCallback<CategoryInfo[]> callback);
 
-	void getTransactions(AccountInfo account,
-			AsyncCallback<TransactionLineInfo[]> callback);
-
-	void getTransactionsByCategory(AccountInfo account, String categoryName,
-			AsyncCallback<TransactionLineInfo[]> callback);
+	void getTransactions(AccountInfo account, AsyncCallback<TransactionLineInfo[]> callback);
 
 	void removeAccount(long id, AsyncCallback<AccountInfo> callback);
 
@@ -40,12 +28,8 @@ public interface AccountServiceAsync {
 
 	void updateAccount(long id, String name, AsyncCallback<Void> callback);
 
-	void updateCategory(String id, String newName, String newColor,
-			AsyncCallback<Void> asyncCallback);
+	void updateCategory(String id, String newName, String newColor, AsyncCallback<Void> asyncCallback);
 
-	void updateTransaction(long id, Date date, String description,
-			String categoryName, double amount, AsyncCallback<Void> callback);
-
-	
+	void updateTransaction(long id, Date date, String description, String categoryName, double amount, AsyncCallback<Void> callback);
 
 }

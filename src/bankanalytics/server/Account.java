@@ -31,7 +31,7 @@ public class Account {
 	private List<TransactionLine> statements = new ArrayList<TransactionLine>();
 	@Persistent
 	private double runningBalance;
-	
+
 	/**
 	 * @param accountName
 	 * @param user
@@ -41,8 +41,6 @@ public class Account {
 		this.accountName = accountName;
 		this.user = user;
 		this.runningBalance = 0;
-		//this.categories = new ArrayList<Category>();
-		//this.statements = new ArrayList<TransactionLine>();
 	}
 
 	/**
@@ -53,7 +51,8 @@ public class Account {
 	}
 
 	/**
-	 * @param accountName the accountName to set
+	 * @param accountName
+	 *            the accountName to set
 	 */
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
@@ -67,16 +66,17 @@ public class Account {
 	}
 
 	/**
-	 * @param runningBalance the runningBalance to set
+	 * @param runningBalance
+	 *            the runningBalance to set
 	 */
 	public void setRunningBalance(double runningBalance) {
 		this.runningBalance = runningBalance;
 	}
-	
+
 	public void addToRunningBalance(double amount) {
 		this.runningBalance += amount;
 	}
-	
+
 	public void removeFromBalance(double amount) {
 		this.runningBalance -= amount;
 	}
@@ -101,19 +101,19 @@ public class Account {
 	public List<Category> getCategories() {
 		return categories;
 	}
-	
+
 	public void addCategory(Category category) {
 		this.categories.add(category);
 	}
-	
+
 	public void removeCategory(Category category) {
 		this.categories.remove(category);
 	}
-	
+
 	public boolean isInCategories(String categoryName) {
 		boolean found = false;
-		for(Category c : categories) {
-			if(c.getCategoryName().equals(categoryName)) {
+		for (Category c : categories) {
+			if (c.getCategoryName().equals(categoryName)) {
 				found = true;
 				break;
 			}
@@ -127,31 +127,31 @@ public class Account {
 	public List<TransactionLine> getStatements() {
 		return statements;
 	}
-	
+
 	public void addStatement(TransactionLine statement) {
 		this.statements.add(statement);
 	}
-	
+
 	public void removeStatement(TransactionLine statement) {
 		this.statements.remove(statement);
 	}
-	
+
 	private List<TransactionLineInfo> getTransactionLineInfos() {
 		List<TransactionLineInfo> liste = new ArrayList<TransactionLineInfo>();
-		for(TransactionLine t : statements) {
+		for (TransactionLine t : statements) {
 			liste.add(t.getTransactionLineInfo());
 		}
 		return liste;
 	}
-	
+
 	private List<CategoryInfo> getCategoryInfos() {
 		List<CategoryInfo> liste = new ArrayList<CategoryInfo>();
-		for(Category c : categories) {
+		for (Category c : categories) {
 			liste.add(c.getCategoryInfo());
 		}
 		return liste;
 	}
-	
+
 	public AccountInfo getAccountInfo() {
 		return new AccountInfo(getId(), getAccountName(), getCategoryInfos(), getTransactionLineInfos(), getRunningBalance());
 	}

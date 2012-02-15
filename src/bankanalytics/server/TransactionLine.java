@@ -5,12 +5,10 @@ import java.util.Date;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import bankanalytics.client.CategoryInfo;
 import bankanalytics.client.TransactionLineInfo;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -19,7 +17,6 @@ public class TransactionLine implements Comparable<TransactionLine> {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     @Extension(vendorName="datanucleus", key="gae.encoded-pk", value="true")
-//	private Long id;
 	private String id;
 	@Persistent
 	private Date addDate;
@@ -27,14 +24,8 @@ public class TransactionLine implements Comparable<TransactionLine> {
 	private String description;
 	@Persistent
 	private double amount;
-//	@Persistent
-//	private Category category;
 	@Persistent
 	private String categoryName;
-
-	//	private static double currentRunningBalance = 0; // Account running balance.
-//	@Persistent
-//	private double lineBalance; // balance just after that transaction line was added.
 	
 	public TransactionLine() {
 		
@@ -78,23 +69,6 @@ public class TransactionLine implements Comparable<TransactionLine> {
 		this.categoryName = categoryName;
 	}
 
-
-//	public static double getCurrentRunningBalance() {
-//		return currentRunningBalance;
-//	}
-//
-//	public static void setCurrentRunningBalance(double currentRunningBalance) {
-//		TransactionLine.currentRunningBalance = currentRunningBalance;
-//	}
-
-//	public double getLineBalance() {
-//		return lineBalance;
-//	}
-//
-//	public void setLineBalance(double lineBalance) {
-//		this.lineBalance = lineBalance;
-//	}
-
 	public String getId() {
 		return id;
 	}
@@ -104,10 +78,12 @@ public class TransactionLine implements Comparable<TransactionLine> {
 	}
 	
 	public TransactionLineInfo getTransactionLineInfo() {
-		//CategoryInfo catInfo = this.category.getCategoryInfo();
 		return new TransactionLineInfo(id, getAddDate(), getDescription(), categoryName, getAmount(), 0);
 	}
 
+	/*
+	 * Used to sort transactions by date.
+	 */
 	@Override
 	public int compareTo(TransactionLine o) {
 		return this.addDate.compareTo(o.addDate);

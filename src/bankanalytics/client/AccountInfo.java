@@ -11,11 +11,11 @@ public class AccountInfo implements Serializable {
 	private List<CategoryInfo> categories;
 	private List<TransactionLineInfo> statements;
 	private double runningBalance;
-	
+
 	public AccountInfo() {
-		
+
 	}
-	
+
 	/**
 	 * @param id
 	 * @param accountName
@@ -24,7 +24,7 @@ public class AccountInfo implements Serializable {
 	 * @param statements
 	 * @param runningBalance
 	 */
-	public AccountInfo(Long id, String accountName, 
+	public AccountInfo(Long id, String accountName,
 			List<CategoryInfo> categories,
 			List<TransactionLineInfo> statements, double runningBalance) {
 		super();
@@ -76,11 +76,17 @@ public class AccountInfo implements Serializable {
 	public List<CategoryInfo> getCategories() {
 		return categories;
 	}
-	
+
+	/*
+	 * Add category to the categories list
+	 */
 	public void addCategory(CategoryInfo category) {
 		this.categories.add(category);
 	}
-	
+
+	/*
+	 * Remove category from the list
+	 */
 	public void removeCategory(CategoryInfo category) {
 		this.categories.remove(category);
 	}
@@ -91,13 +97,19 @@ public class AccountInfo implements Serializable {
 	public List<TransactionLineInfo> getStatements() {
 		return statements;
 	}
-	
+
+	/*
+	 * Add a transaction to the transaction list
+	 */
 	public void addStatement(TransactionLineInfo transaction) {
 		this.statements.add(transaction);
 	}
-	
+
+	/*
+	 * Remove a transaction from the list
+	 */
 	public void removeStatement(TransactionLineInfo transaction) {
 		this.statements.remove(transaction);
 	}
-	
+
 }

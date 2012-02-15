@@ -14,7 +14,7 @@ public class Category {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    @Extension(vendorName="datanucleus", key="gae.encoded-pk", value="true")
+	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
 	private String id;
 	@Persistent
 	private String categoryName;
@@ -22,7 +22,6 @@ public class Category {
 	private String color;
 	@Persistent
 	private double categorySum;
-
 
 	/**
 	 * @param categoryName
@@ -34,7 +33,7 @@ public class Category {
 		this.color = color;
 		this.categorySum = 0;
 	}
-	
+
 	/**
 	 * @param categoryName
 	 */
@@ -71,8 +70,7 @@ public class Category {
 	public void setColor(String color) {
 		this.color = color;
 	}
-	
-	
+
 	/**
 	 * @return the categorySum
 	 */
@@ -86,11 +84,11 @@ public class Category {
 	public void setCategorySum(double categorySum) {
 		this.categorySum = categorySum;
 	}
-	
+
 	public void addAmountToSum(double amount) {
 		this.categorySum += amount;
 	}
-	
+
 	public void removeAmountFromSum(double amount) {
 		this.categorySum -= amount;
 	}
@@ -101,7 +99,7 @@ public class Category {
 	public String getId() {
 		return id;
 	}
-	
+
 	public CategoryInfo getCategoryInfo() {
 		return new CategoryInfo(getId(), getCategoryName(), getColor(), getCategorySum());
 	}

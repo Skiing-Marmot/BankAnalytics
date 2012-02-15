@@ -3,7 +3,6 @@ package bankanalytics.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -13,6 +12,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/*
+ * Dialog box displaying the account's categories. We can add or update categories.
+ */
 public class CategoryManagerDialog extends DialogBox {
 
 	private VerticalPanel panel = new VerticalPanel();
@@ -25,12 +27,10 @@ public class CategoryManagerDialog extends DialogBox {
 	private TextBox colorTextBox = new TextBox();
 	private Button addButton = new Button("Add category");
 
-	private AccountServiceAsync accountService = GWT
-			.create(AccountService.class);
+	private AccountServiceAsync accountService = GWT.create(AccountService.class);
 	private StatementsPanel statPanel;
 
-	public CategoryManagerDialog(final AccountInfo accountInfo,
-			StatementsPanel statPanel) {
+	public CategoryManagerDialog(final AccountInfo accountInfo, StatementsPanel statPanel) {
 
 		this.statPanel = statPanel;
 
@@ -60,8 +60,7 @@ public class CategoryManagerDialog extends DialogBox {
 		});
 		addPanel.add(addButton);
 
-		// DialogBox is a SimplePanel, so you have to set its widget property to
-		// whatever you want its contents to be.
+		// Button to close the dialog box
 		ok.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				CategoryManagerDialog.this.hide();
@@ -77,6 +76,9 @@ public class CategoryManagerDialog extends DialogBox {
 		setWidget(panel);
 	}
 
+	/*
+	 * Add a new category.
+	 */
 	protected void addCategory(AccountInfo account) {
 		// Get name
 		final String name = nameTextBox.getText().trim();
@@ -86,28 +88,26 @@ public class CategoryManagerDialog extends DialogBox {
 		final String color = colorTextBox.getText().trim();
 		colorTextBox.setText("");
 
-		accountService.addCategory(account, name, color,
-				new AsyncCallback<CategoryInfo>() {
+		accountService.addCategory(account, name, color, new AsyncCallback<CategoryInfo>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
 
-					}
-
-					@Override
-					public void onSuccess(CategoryInfo result) {
-						if (result != null) {
-							displayCategory(result);
-							statPanel.addCategory(result);
-						}
-					}
-				});
-
-		// TODO update listbox
-
+			@Override
+			public void onSuccess(CategoryInfo result) {
+				if (result != null) {
+					displayCategory(result);
+					statPanel.addCategory(result); // Add the new category to the listbox of the add transaction panel
+				}
+			}
+		});
 	}
 
+	/*
+	 * Load and display the account's categories
+	 */
 	private void loadCategories(AccountInfo accountInfo) {
 		// Set up the header row of the table.
 		categoriesFlexTable.setText(0, 0, "Category name");
@@ -116,31 +116,30 @@ public class CategoryManagerDialog extends DialogBox {
 //		categoriesFlexTable.setText(0, 3, "Delete");
 
 		// Add styles to the statements flex table.
-		categoriesFlexTable.getRowFormatter().addStyleName(0,
-				"statementsTableHeader");
+		categoriesFlexTable.getRowFormatter().addStyleName(0, "statementsTableHeader");
 		categoriesFlexTable.addStyleName("statementsTable");
 
-		// Create table for statements line
+		accountService.getCategories(accountInfo, new AsyncCallback<CategoryInfo[]>() {
 
-		accountService.getCategories(accountInfo,
-				new AsyncCallback<CategoryInfo[]>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO
+			}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO
+			@Override
+			public void onSuccess(CategoryInfo[] result) {
+				if (result != null) {
+					for (int i = 0; i < result.length; i++) {
+						displayCategory(result[i]);
 					}
-
-					@Override
-					public void onSuccess(CategoryInfo[] result) {
-						if (result != null) {
-							for (int i = 0; i < result.length; i++) {
-								displayCategory(result[i]);
-							}
-						}
-					}
-				});
+				}
+			}
+		});
 	}
 
+	/*
+	 * Display a line of the categories table
+	 */
 	private void displayCategory(final CategoryInfo category) {
 		int rowNum = categoriesFlexTable.getRowCount();
 
@@ -152,34 +151,32 @@ public class CategoryManagerDialog extends DialogBox {
 		categoriesFlexTable.setWidget(rowNum, 1, colorTextBox);
 		
 		// Add a button to update the category
-				Button updateCategoryButton = new Button("OK");
-				updateCategoryButton.addStyleDependentName("update");
-				updateCategoryButton.addClickHandler(new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						updateCategory(category, nameTextBox, colorTextBox);
-					}
-				});
-				categoriesFlexTable.setWidget(rowNum, 2, updateCategoryButton);
+		Button updateCategoryButton = new Button("OK");
+		updateCategoryButton.addStyleDependentName("update");
+		updateCategoryButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				updateCategory(category, nameTextBox, colorTextBox);
+			}
+		});
+		categoriesFlexTable.setWidget(rowNum, 2, updateCategoryButton);
 
-		// Add a button to remove this category from the table.
-//		Button removeCategoryButton = new Button("x");
-//		removeCategoryButton.addStyleDependentName("remove");
-//		removeCategoryButton.addClickHandler(new ClickHandler() {
-//			public void onClick(ClickEvent event) {
-//				removeCategory(category);
-//			}
-//		});
-//		categoriesFlexTable.setWidget(rowNum, 3, removeCategoryButton);
+		// TODO Add a button to remove this category from the table.
 
 		
 	}
 	
+	/*
+	 * Called when the updateCategoryButton is clicked. Update the category if name or color has been changed.
+	 */
 	private void updateCategory(CategoryInfo category, TextBox nameTextBox, TextBox colorTextBox) {
 		if(!nameTextBox.getText().equals(category.getCategoryName()) || !colorTextBox.getText().equals(category.getColor())) {
 			updateCategory(category, nameTextBox.getText(), colorTextBox.getText());
 		}
 	}
 	
+	/*
+	 * Update the category in the table
+	 */
 	private void updateCategory(final CategoryInfo category, final String newName, final String newColor) {
 		accountService.updateCategory(category.getId(), newName, newColor, new AsyncCallback<Void>() {
 
@@ -196,18 +193,6 @@ public class CategoryManagerDialog extends DialogBox {
 	}
 	
 	private void removeCategory(final CategoryInfo category) {
-//		accountService.removeCategory(category.getId(), new AsyncCallback<Void>() {
-//					public void onFailure(Throwable error) {
-//						// TODO
-//					}
-//
-//					public void onSuccess(Void ignore) {
-//						int removedIndex = statPanel.removeCategory(category);
-//						categoriesFlexTable.removeRow(removedIndex+1);
-//					}
-//				});
+		// TODO
 	}
-	
-	
-
 }

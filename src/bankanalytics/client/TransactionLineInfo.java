@@ -32,8 +32,6 @@ public class TransactionLineInfo implements Serializable, Comparable<Transaction
 		this.amount = amount;
 		this.category = category;
 		this.lineBalance = lineBalance;
-//		TransactionLine.currentRunningBalance += amount;
-//		this.lineBalance = TransactionLine.getCurrentRunningBalance();
 	}
 
 	public String getDescription() {
@@ -60,14 +58,6 @@ public class TransactionLineInfo implements Serializable, Comparable<Transaction
 		this.category = category;
 	}
 
-//	public static double getCurrentRunningBalance() {
-//		return currentRunningBalance;
-//	}
-//
-//	public static void setCurrentRunningBalance(double currentRunningBalance) {
-//		TransactionLine.currentRunningBalance = currentRunningBalance;
-//	}
-
 	public double getLineBalance() {
 		return lineBalance;
 	}
@@ -91,6 +81,9 @@ public class TransactionLineInfo implements Serializable, Comparable<Transaction
 		this.addDate = addDate;
 	}
 
+	/*
+	 * Used to sort the transactions by date
+	 */
 	@Override
 	public int compareTo(TransactionLineInfo o) {
 		return this.addDate.compareTo(o.addDate);

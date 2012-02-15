@@ -7,7 +7,7 @@ public class CategoryInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String categoryName;
-	private String color;
+	private String color; // Color in which transaction of that category will be highlighted (not implemented).
 	private double sum;
 	
 	public CategoryInfo() {

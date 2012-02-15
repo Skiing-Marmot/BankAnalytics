@@ -1,7 +1,6 @@
 package bankanalytics.client;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
@@ -18,11 +17,13 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.DatePicker;
 
+/*
+ * Panel displaying the list of statements
+ */
 public class StatementsPanel extends Composite {
 
 	// Constant for column number in statementsFlexTable
@@ -37,8 +38,8 @@ public class StatementsPanel extends Composite {
 	// UI components
 	// Main panel
 	private VerticalPanel mainPanel = new VerticalPanel();
-	private FlexTable statementsFlexTable = new FlexTable(); // TODO see
-																// dataGrid
+	private FlexTable statementsFlexTable = new FlexTable();
+
 	// Add panel
 	private HorizontalPanel addPanel = new HorizontalPanel();
 	private VerticalPanel detailsPanel = new VerticalPanel();
@@ -59,17 +60,18 @@ public class StatementsPanel extends Composite {
 	private TextBox depositTextBox = new TextBox();
 	// Add button
 	private Button addTransactionLineButton = new Button("Add Transaction");
+
 	// User login
 	private Anchor signOutLink = new Anchor("Sign Out");
 
 	private Anchor categoryManagerLink = new Anchor("Manage categories");
-	private Anchor statementsByCategoryLink = new Anchor(
-			"See statements by category");
+	private Anchor statementsByCategoryLink = new Anchor("See statements by category");
+	
+	Label titleLabel;
 
 	private LoginInfo loginInfo = null;
 	private AccountInfo accountInfo = null;
-	private final AccountServiceAsync accountService = GWT
-			.create(AccountService.class);
+	private final AccountServiceAsync accountService = GWT.create(AccountService.class);
 	private ArrayList<TransactionLineInfo> transactionLines = new ArrayList<TransactionLineInfo>();
 	private ArrayList<CategoryInfo> categories = new ArrayList<CategoryInfo>();
 	private double accountBalance;
@@ -81,14 +83,13 @@ public class StatementsPanel extends Composite {
 		this.accountInfo = accountInfo;
 		this.loginInfo = loginInfo;
 		accountBalance = 0;
+		
 		// Set up sign out hyperlink.
 		signOutLink.setHref(loginInfo.getLogoutUrl());
 		mainPanel.add(signOutLink);
-		Label userLabel = new Label("Hello " + loginInfo.getNickname()
-				+ ", \nOn that page you can manage your accounts.");
+		Label userLabel = new Label("Hello " + loginInfo.getNickname()+ ", \nOn that page you can manage your accounts.");
 		mainPanel.add(userLabel);
-		Label titleLabel = new Label(accountInfo.getAccountName() + " ("
-				+ accountInfo.getRunningBalance() + " $)");
+		titleLabel = new Label(accountInfo.getAccountName() + " ("+ accountInfo.getRunningBalance() + " $)");
 		mainPanel.add(titleLabel);
 
 		// Link to open the popup displaying the amounts by category
@@ -127,7 +128,7 @@ public class StatementsPanel extends Composite {
 		// Create table for statement lines.
 		initializeTable();
 
-		// Create table for statements line
+		// Add transactions to the table
 		loadTransactionLines();
 
 		// Assemble details panel.
@@ -153,10 +154,9 @@ public class StatementsPanel extends Composite {
 		// Assemble Main panel.
 		mainPanel.add(statementsFlexTable);
 		mainPanel.add(addPanel);
-		// mainPanel.add(lastUpdatedLabel);
 		mainPanel.addStyleName("mainPanel");
 
-		// Move cursor focus to the input box.
+		// Move cursor focus to the description input box.
 		descriptionTextBox.setFocus(true);
 
 		// Listen for mouse events on the Add button.
@@ -167,17 +167,10 @@ public class StatementsPanel extends Composite {
 		});
 
 		// TODO Listen for keyboard events in the input boxes.
-		/*
-		 * // Listen for keyboard events in the input box.
-		 * descriptionTextBox.addKeyPressHandler(new KeyPressHandler() { public
-		 * void onKeyPress(KeyPressEvent event) { if (event.getCharCode() ==
-		 * KeyCodes.KEY_ENTER) { addTransactionLine(); } } });
-		 */
 
 		// TODO Delete paymentTextBox content when user clicks on depositTextBox
 
 		// TODO Remove depositTextBox content when user clicks in paymentTextBox
-
 	}
 
 	/*
@@ -185,52 +178,48 @@ public class StatementsPanel extends Composite {
 	 */
 	private void loadCategories() {
 
-		accountService.getCategories(accountInfo,
-				new AsyncCallback<CategoryInfo[]>() {
+		accountService.getCategories(accountInfo, new AsyncCallback<CategoryInfo[]>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						handleError(caught);
-					}
+			@Override
+			public void onFailure(Throwable caught) {
+				handleError(caught);
+			}
 
-					@Override
-					public void onSuccess(CategoryInfo[] result) {
-						if (result != null) {
-							for (int i = 0; i < result.length; i++) {
-								categoryListBox.addItem(result[i]
-										.getCategoryName());
-								categories.add(result[i]);
-							}
-						}
+			@Override
+			public void onSuccess(CategoryInfo[] result) {
+				if (result != null) {
+					for (int i = 0; i < result.length; i++) {
+						categoryListBox.addItem(result[i].getCategoryName());
+						categories.add(result[i]);
 					}
-				});
+				}
+			}
+		});
 	}
 
 	/*
 	 * Load existing transactions and add them to the list and to the table
 	 */
 	private void loadTransactionLines() {
-		accountService.getTransactions(accountInfo,
-				new AsyncCallback<TransactionLineInfo[]>() {
-
-					@Override
-					public void onSuccess(TransactionLineInfo[] result) {
-						if (result != null) {
-							accountBalance = 0;
-							for (TransactionLineInfo transaction : result) {
-								accountBalance += transaction.getAmount();
-								transaction.setLineBalance(accountBalance);
-								transactionLines.add(transaction);
-								displayTransactionLine(transaction);
-							}
-						}
+		accountService.getTransactions(accountInfo, new AsyncCallback<TransactionLineInfo[]>() {
+			@Override
+			public void onSuccess(TransactionLineInfo[] result) {
+				if (result != null) {
+					accountBalance = 0;
+					for (TransactionLineInfo transaction : result) {
+						accountBalance += transaction.getAmount();
+						transaction.setLineBalance(accountBalance);
+						transactionLines.add(transaction);
+						displayTransactionLine(transaction);
 					}
+				}
+			}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						handleError(caught);
-					}
-				});
+			@Override
+			public void onFailure(Throwable caught) {
+				handleError(caught);
+			}
+		});
 	}
 
 	/**
@@ -284,14 +273,11 @@ public class StatementsPanel extends Composite {
 		}
 
 		// Get statement category
-		String category = categoryListBox.getValue(categoryListBox
-				.getSelectedIndex());
-		// categoryListBox.setSelectedIndex(0);
+		String category = categoryListBox.getValue(categoryListBox.getSelectedIndex());
 
 		// Get statement amount
 		double amount;
-		if (!payment.isEmpty()) { // The transaction is a payment, it is a
-									// negative amount.
+		if (!payment.isEmpty()) { // The transaction is a payment, it is a negative amount.
 			amount = -1.0 * Double.parseDouble(payment);
 			paymentTextBox.setText("");
 		} else { // The transaction is a deposit.
@@ -311,45 +297,40 @@ public class StatementsPanel extends Composite {
 	/*
 	 * Add new transaction to the database and display it
 	 */
-	private void addTransactionLine(final Date date, final String description,
-			final String categoryName, double amount) {
+	private void addTransactionLine(final Date date, final String description, final String categoryName, double amount) {
 
-		accountService.addTransaction(accountInfo, date, description,
-				categoryName, amount, new AsyncCallback<TransactionLineInfo>() {
+		accountService.addTransaction(accountInfo, date, description, categoryName, amount, new AsyncCallback<TransactionLineInfo>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						handleError(caught);
+			@Override
+			public void onFailure(Throwable caught) {
+				handleError(caught);
+			}
+
+			@Override
+			public void onSuccess(TransactionLineInfo result) {
+				transactionLines.add(result);
+				if (transactionLines.size() > 1 && transactionLines.get(transactionLines.size() - 2).getAddDate().after(result.getAddDate())) {
+					// if the new transaction was before the last in the table,
+					// we have to sort the list an display again all the lines in the good order
+					Collections.sort(transactionLines);
+					accountBalance = 0;
+					initializeTable();
+					for (TransactionLineInfo transaction : transactionLines) {
+						accountBalance += transaction.getAmount();
+						transaction.setLineBalance(accountBalance);
+						displayTransactionLine(transaction);
 					}
+					titleLabel.setText(accountInfo.getAccountName() + " ("+ accountBalance + " $)");
 
-					@Override
-					public void onSuccess(TransactionLineInfo result) {
-						transactionLines.add(result);
-						if (transactionLines.size() > 1
-								&& transactionLines
-										.get(transactionLines.size() - 2)
-										.getAddDate()
-										.after(result.getAddDate())) {
-							// if the new transaction was before the last one,
-							// we have to sort the list an display again all the
-							// line in the good order
-							Collections.sort(transactionLines);
-							accountBalance = 0;
-							initializeTable();
-							for (TransactionLineInfo transaction : transactionLines) {
-								accountBalance += transaction.getAmount();
-								transaction.setLineBalance(accountBalance);
-								displayTransactionLine(transaction);
-							}
-
-						} else {
-							// we only display the new transaction at the end
-							accountBalance += result.getAmount();
-							result.setLineBalance(accountBalance);
-							displayTransactionLine(result);
-						}
-					}
-				});
+				} else {
+					// we only display the new transaction at the end
+					accountBalance += result.getAmount();
+					result.setLineBalance(accountBalance);
+					displayTransactionLine(result);
+					titleLabel.setText(accountInfo.getAccountName() + " ("+ accountBalance + " $)");
+				}
+			}
+		});
 	}
 
 	/*
@@ -360,49 +341,18 @@ public class StatementsPanel extends Composite {
 		// Add the transaction line to the table.
 		int rowNum = statementsFlexTable.getRowCount();
 
-		// FIXME Fill the cells
-		statementsFlexTable.setText(rowNum, NUM_COLUMN_NUMBER, ""
-				+ (transactionLines.indexOf(transaction) + 1));
-		statementsFlexTable.setText(rowNum, DATE_COLUMN_NUMBER, DateTimeFormat
-				.getFormat("dd/MM/yyyy").format(transaction.getAddDate()));
-		statementsFlexTable.setText(rowNum, DESC_COLUMN_NUMBER,
-				transaction.getDescription());
-		statementsFlexTable.setText(rowNum, CAT_COLUMN_NUMBER,
-				transaction.getCategory());
-		// statementsFlexTable.setHTML(rowNum, AMOUNT_COLUMN_NUMBER,
-		// "<div style=\"background-color:red;\" />");
-		statementsFlexTable.setText(rowNum, AMOUNT_COLUMN_NUMBER,
-				Double.toString(transaction.getAmount()));
-		statementsFlexTable.setText(rowNum, BALANCE_COLUMN_NUMBER,
-				Double.toString(transaction.getLineBalance()));
-
-		// Add a button to remove this line from the table.
-		// Button removeTransactionLineButton = new Button("x");
-		// removeTransactionLineButton.addStyleDependentName("remove");
-		// removeTransactionLineButton.addClickHandler(new ClickHandler() {
-		// public void onClick(ClickEvent event) {
-		// removeTransactionLine(transaction);
-		// }
-		// });
-		// statementsFlexTable.setWidget(rowNum, REMOVE_COLUMN_NUMBER,
-		// removeTransactionLineButton);
-
+		// Fill the cells
+		statementsFlexTable.setText(rowNum, NUM_COLUMN_NUMBER, "" + (transactionLines.indexOf(transaction) + 1));
+		statementsFlexTable.setText(rowNum, DATE_COLUMN_NUMBER, DateTimeFormat.getFormat("dd/MM/yyyy").format(transaction.getAddDate()));
+		statementsFlexTable.setText(rowNum, DESC_COLUMN_NUMBER, transaction.getDescription());
+		statementsFlexTable.setText(rowNum, CAT_COLUMN_NUMBER, transaction.getCategory());
+		statementsFlexTable.setText(rowNum, AMOUNT_COLUMN_NUMBER, Double.toString(transaction.getAmount()));
+		statementsFlexTable.setText(rowNum, BALANCE_COLUMN_NUMBER, Double.toString(transaction.getLineBalance()));
 	}
 
-	private void removeTransactionLine(final TransactionLineInfo transaction) {
-		// TODO
-		// accountService.removeTransactionLine(transaction.getId(),
-		// new AsyncCallback<Void>() {
-		// public void onFailure(Throwable error) {
-		// handleError(error);
-		// }
-		//
-		// public void onSuccess(Void ignore) {
-		// undisplayTransactionLine(transaction);
-		// }
-		// });
-	}
-
+	/*
+	 * Remove all the rows from the statements table and add the header row.
+	 */
 	private void initializeTable() {
 		statementsFlexTable.removeAllRows();
 		// Set up the header row of the table.
@@ -411,44 +361,42 @@ public class StatementsPanel extends Composite {
 		statementsFlexTable.setText(0, DESC_COLUMN_NUMBER, "Description");
 		statementsFlexTable.setText(0, CAT_COLUMN_NUMBER, "Category");
 		statementsFlexTable.setText(0, AMOUNT_COLUMN_NUMBER, "Amount");
-		statementsFlexTable
-				.setText(0, BALANCE_COLUMN_NUMBER, "Running Balance");
+		statementsFlexTable.setText(0, BALANCE_COLUMN_NUMBER, "Running Balance");
 		// statementsFlexTable.setText(0, REMOVE_COLUMN_NUMBER, "Remove");
+
 		// Add styles to the statements flex table.
-		statementsFlexTable.getRowFormatter().addStyleName(0,
-				"statementsTableHeader");
+		statementsFlexTable.getRowFormatter().addStyleName(0,"statementsTableHeader");
 		statementsFlexTable.addStyleName("statementsTable");
 	}
 
 	private void undisplayTransactionLine(TransactionLineInfo transaction) {
-		int removedIndex = transactionLines.indexOf(transaction);
-		transactionLines.remove(removedIndex);
-		statementsFlexTable.removeRow(removedIndex + 1);
+		// TODO
 	}
 
 	private void handleError(Throwable error) {
-		// Window.alert(error.getMessage());
 		if (error instanceof NotLoggedInException) {
 			Window.Location.replace(loginInfo.getLogoutUrl());
 		}
 	}
-	
+
+	/*
+	 * Add a new category to category listBox and to the list of categories.
+	 */
 	protected void addCategory(CategoryInfo category) {
 		categories.add(category);
 		categoryListBox.addItem(category.getCategoryName());
 	}
-	
+
+	/*
+	 * Update the category in the list box and in the list of categories.
+	 */
 	protected void updateCategory(CategoryInfo category, String newName, String newColor) {
-		boolean found = false;
-		for(int i=0; i<categories.size() && !found; i++) {
-			if(categories.get(i).getCategoryName().equals(category.getCategoryName())) {
-				found = true;
-				categories.get(i).setCategoryName(newName);
-				categories.get(i).setColor(newColor);				
-			}
-		}
+		// TODO
 	}
-	
+
+	/*
+	 * Remove category from the listBox and from the list of categories.
+	 */
 	protected int removeCategory(CategoryInfo category) {
 		int removedIndex = categories.indexOf(category);
 		categories.remove(removedIndex);
